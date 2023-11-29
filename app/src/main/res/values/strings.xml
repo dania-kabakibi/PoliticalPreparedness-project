@@ -18,4 +18,9 @@
     <string name="use_my_location">Use my location</string>
     <string name="my_representatives">My Representatives</string>
 
+    <string name="location_required_error">Location services must be enabled to get current location</string>
+    <string name="saved_election_toast">Election saved!</string>
+    <string name="removed_election_toast">Election removed!</string>
+    <string name="dialog_message">State is null for this election!</string>
+
 </resources>

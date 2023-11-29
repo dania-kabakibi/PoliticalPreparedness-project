@@ -4,40 +4,64 @@ import android.os.Bundle
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.navArgs
 import com.example.android.politicalpreparedness.R
+import com.example.android.politicalpreparedness.database.ElectionDatabase
 import com.example.android.politicalpreparedness.databinding.FragmentVoterInfoBinding
 
 class VoterInfoFragment : Fragment() {
 
     private lateinit var viewModel: VoterInfoViewModel
+    private lateinit var viewModelFactory: VoterInfoViewModelFactory
     private lateinit var binding: FragmentVoterInfoBinding
 
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    private val args: VoterInfoFragmentArgs by navArgs()
 
-        viewModel= ViewModelProvider(this)[VoterInfoViewModel::class.java]
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        val application = requireNotNull(this.activity).application
+        val dataSource = ElectionDatabase.getInstance(application).electionDao
+
+        viewModelFactory = VoterInfoViewModelFactory(dataSource)
+        viewModel = ViewModelProvider(this, viewModelFactory)[VoterInfoViewModel::class.java]
 
         binding = DataBindingUtil.inflate(
-            inflater, R.layout.fragment_voter_info, container, false)
+            inflater, R.layout.fragment_voter_info, container, false
+        )
+        binding.lifecycleOwner = this
 
         binding.voterInfoViewModel = viewModel
 
-        //TODO: Populate voter info -- hide views without provided data.
+        viewModel.setApplicationContext(requireContext())
+        viewModel.setButtonTextValue(id, binding)
+
+        val id = args.argElectionId
+        val division = args.argDivision
+
+        //val address = "nj, us"
+        val address = "${division.state}, ${division.country}"
+        viewModel.getVoterInfoFromAPI(id, address)
+
+        viewModel.voterInfo.observe(viewLifecycleOwner, Observer {
+            binding.electionName.title = it.election.name
+            binding.electionDate.text = it.election.electionDay.toString()
+            viewModel.getUrls(binding)
+        })
+
+        binding.followButton.setOnClickListener {
+            viewModel.setButtonStatus(this)
+        }
+
         /**
         Hint: You will need to ensure proper data is provided from previous fragment.
-        */
-
-
-        //TODO: Handle loading of URLs
-
-        //TODO: Handle save button UI state
-        //TODO: cont'd Handle save button clicks
+         */
 
         return binding.root
     }
-
-    //TODO: Create method to load URL intents
 
 }

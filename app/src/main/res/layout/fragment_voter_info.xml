@@ -22,16 +22,18 @@
             android:padding="@dimen/default_padding"
             android:singleLine="true"
             app:layout_constraintTop_toTopOf="parent"
-            app:title='election name'
+            app:title=""
             app:titleTextColor="@color/white" />
 
         <TextView
             android:id="@+id/election_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/small_margin"
+            android:text=""
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/election_name"
-            tools:layout_editor_absoluteX="8dp"
-            tools:text="12 November 2055"
             style="@style/textStyle1" />
 
         <TextView
@@ -39,6 +41,7 @@
             style="@style/headerStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/small_margin"
             android:layout_marginTop="@dimen/default_margin"
             android:text="@string/election_information"
             app:layout_constraintStart_toStartOf="@id/election_date"
@@ -47,6 +50,7 @@
         <TextView
             android:id="@+id/state_locations"
             style="@style/textStyle2"
+            android:layout_marginStart="@dimen/small_margin"
             android:layout_marginTop="@dimen/small_margin"
             android:clickable="true"
             android:text="@string/voting_locations"
@@ -58,6 +62,7 @@
             style="@style/textStyle2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/small_margin"
             android:layout_marginTop="@dimen/small_margin"
             android:clickable="true"
             android:text="@string/ballot_information"
@@ -70,7 +75,6 @@
             android:layout_height="wrap_content"
             app:constraint_referenced_ids="state_correspondence_header,address" />
 
-        <!-- TODO: Add visual styling and content -->
         <TextView
             android:id="@+id/state_correspondence_header"
             android:layout_width="wrap_content"
@@ -78,7 +82,6 @@
             app:layout_constraintTop_toBottomOf="@id/state_ballot"
             app:layout_constraintStart_toStartOf="@id/election_date" />
 
-        <!-- TODO: Add data binding -->
         <TextView
             android:id="@+id/address"
             android:layout_width="wrap_content"
@@ -87,15 +90,15 @@
             app:layout_constraintStart_toStartOf="@id/election_date" />
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/follow_button"
             style="@style/buttonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/small_margin"
-            android:text="@string/follow_election"
+            android:text=""
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
