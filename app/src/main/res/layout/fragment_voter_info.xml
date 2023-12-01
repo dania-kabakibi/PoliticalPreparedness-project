@@ -23,7 +23,7 @@
             android:singleLine="true"
             app:layout_constraintTop_toTopOf="parent"
             app:title=""
-            app:titleTextColor="@color/white" />
+            app:titleTextColor="@color/text_color" />
 
         <TextView
             android:id="@+id/election_date"

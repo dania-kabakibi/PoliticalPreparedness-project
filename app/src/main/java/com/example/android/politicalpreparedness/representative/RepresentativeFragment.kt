@@ -7,11 +7,13 @@ import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.Spinner
+import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -36,6 +38,10 @@ class DetailFragment : Fragment() {
 
     val TAG = "RepresentativeFragment"
 
+    private var recyclerViewState: Parcelable? = null
+    private var motionLayoutState: Int = -1
+    private var currentProgress: Float = 0.0f
+
     private lateinit var viewModel: RepresentativeViewModel
     private lateinit var binding: FragmentRepresentativeBinding
 
@@ -53,6 +59,23 @@ class DetailFragment : Fragment() {
         )
 
         binding.representativeViewModel = viewModel
+
+        val recyclerView = binding.representativesRecyclerView
+        val motionLayout = binding.representativeFragment
+
+        // Restore RecyclerView state if available
+        recyclerViewState?.let {
+            recyclerView.layoutManager?.onRestoreInstanceState(it)
+        }
+        // Restore MotionLayout state
+        if (motionLayoutState != -1) {
+            motionLayout.transitionToState(motionLayoutState)
+        }
+        // Restore progress if available
+        savedInstanceState?.let {
+            currentProgress = it.getFloat("currentProgress", 0.0f)
+            motionLayout.progress = currentProgress
+        }
 
         val spinner: Spinner = binding.state
         // Create an ArrayAdapter using the string array and a default spinner layout.
@@ -194,6 +217,31 @@ class DetailFragment : Fragment() {
     private fun hideKeyboard() {
         val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view?.windowToken, 0)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        // Save RecyclerView state
+        val recyclerView = binding.representativesRecyclerView
+        recyclerViewState = recyclerView.layoutManager?.onSaveInstanceState()
+        outState.putParcelable("recycler_state", recyclerViewState)
+
+        // Save MotionLayout state
+        val motionLayout = binding.representativeFragment
+        motionLayoutState = motionLayout.currentState ?: -1
+        outState.putInt("motion_layout_state", motionLayoutState)
+
+        outState.putFloat("currentProgress", currentProgress)
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        // Restore state if available after view creation
+        savedInstanceState?.let {
+            recyclerViewState = it.getParcelable("recycler_state")
+            motionLayoutState = it.getInt("motion_layout_state")
+            currentProgress = it.getFloat("currentProgress")
+        }
     }
 
 }
