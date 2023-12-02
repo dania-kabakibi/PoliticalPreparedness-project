@@ -38,10 +38,6 @@ class DetailFragment : Fragment() {
 
     val TAG = "RepresentativeFragment"
 
-    private var recyclerViewState: Parcelable? = null
-    private var motionLayoutState: Int = -1
-    private var currentProgress: Float = 0.0f
-
     private lateinit var viewModel: RepresentativeViewModel
     private lateinit var binding: FragmentRepresentativeBinding
 
@@ -60,24 +56,16 @@ class DetailFragment : Fragment() {
 
         binding.representativeViewModel = viewModel
 
-        val recyclerView = binding.representativesRecyclerView
-        val motionLayout = binding.representativeFragment
 
-        // Restore RecyclerView state if available
-        recyclerViewState?.let {
-            recyclerView.layoutManager?.onRestoreInstanceState(it)
-        }
-        // Restore MotionLayout state
-        /*if (motionLayoutState != -1) {
-            motionLayout.transitionToState(motionLayoutState)
-        }*/
         savedInstanceState?.let {
-            // Restore progress if available
-            currentProgress = it.getFloat("currentProgress", 0.0f)
-            motionLayout.progress = currentProgress
             // Restore MotionLayout state
-            motionLayoutState= it.getInt("motion_layout_state")
+            val motionLayout = binding.representativeFragment
+            val motionLayoutState= it.getInt("motion_layout_state")
             motionLayout.transitionToState(motionLayoutState)
+
+            val recyclerView = binding.representativesRecyclerView
+            val recyclerState = it.getParcelable<Parcelable>("recycler_state")
+            recyclerView.layoutManager?.onRestoreInstanceState(recyclerState)
         }
 
         val spinner: Spinner = binding.state
@@ -224,27 +212,14 @@ class DetailFragment : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        // Save RecyclerView state
-        val recyclerView = binding.representativesRecyclerView
-        recyclerViewState = recyclerView.layoutManager?.onSaveInstanceState()
-        outState.putParcelable("recycler_state", recyclerViewState)
 
         // Save MotionLayout state
         val motionLayout = binding.representativeFragment
-        motionLayoutState = motionLayout.currentState
+        val motionLayoutState = motionLayout.currentState
         outState.putInt("motion_layout_state", motionLayoutState)
-
-        outState.putFloat("currentProgress", currentProgress)
+        
+        val recyclerView = binding.representativesRecyclerView
+        outState.putParcelable("recycler_state", recyclerView.layoutManager?.onSaveInstanceState())
     }
-
-    /*override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        // Restore state if available after view creation
-        savedInstanceState?.let {
-            recyclerViewState = it.getParcelable("recycler_state")
-            motionLayoutState = it.getInt("motion_layout_state")
-            currentProgress = it.getFloat("currentProgress")
-        }
-    }*/
 
 }
