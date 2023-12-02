@@ -68,13 +68,16 @@ class DetailFragment : Fragment() {
             recyclerView.layoutManager?.onRestoreInstanceState(it)
         }
         // Restore MotionLayout state
-        if (motionLayoutState != -1) {
+        /*if (motionLayoutState != -1) {
             motionLayout.transitionToState(motionLayoutState)
-        }
-        // Restore progress if available
+        }*/
         savedInstanceState?.let {
+            // Restore progress if available
             currentProgress = it.getFloat("currentProgress", 0.0f)
             motionLayout.progress = currentProgress
+            // Restore MotionLayout state
+            motionLayoutState= it.getInt("motion_layout_state")
+            motionLayout.transitionToState(motionLayoutState)
         }
 
         val spinner: Spinner = binding.state
@@ -228,13 +231,13 @@ class DetailFragment : Fragment() {
 
         // Save MotionLayout state
         val motionLayout = binding.representativeFragment
-        motionLayoutState = motionLayout.currentState ?: -1
+        motionLayoutState = motionLayout.currentState
         outState.putInt("motion_layout_state", motionLayoutState)
 
         outState.putFloat("currentProgress", currentProgress)
     }
 
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+    /*override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         // Restore state if available after view creation
         savedInstanceState?.let {
@@ -242,6 +245,6 @@ class DetailFragment : Fragment() {
             motionLayoutState = it.getInt("motion_layout_state")
             currentProgress = it.getFloat("currentProgress")
         }
-    }
+    }*/
 
 }
