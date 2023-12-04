@@ -7,13 +7,11 @@ import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
-import android.os.Parcelable
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.Spinner
-import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -24,6 +22,7 @@ import com.example.android.politicalpreparedness.R
 import com.example.android.politicalpreparedness.databinding.FragmentRepresentativeBinding
 import com.example.android.politicalpreparedness.network.models.Address
 import com.example.android.politicalpreparedness.representative.adapter.RepresentativeListAdapter
+import com.example.android.politicalpreparedness.representative.model.Representative
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.snackbar.Snackbar
@@ -60,12 +59,12 @@ class DetailFragment : Fragment() {
         savedInstanceState?.let {
             // Restore MotionLayout state
             val motionLayout = binding.representativeFragment
-            val motionLayoutState= it.getInt("motion_layout_state")
+            val motionLayoutState = it.getInt("motion_layout_state")
             motionLayout.transitionToState(motionLayoutState)
 
-            val recyclerView = binding.representativesRecyclerView
-            val recyclerState = it.getParcelable<Parcelable>("recycler_state")
-            recyclerView.layoutManager?.onRestoreInstanceState(recyclerState)
+            // Restore representatives list data
+            val listData = it.getParcelableArrayList<Representative>("list_data")
+            listData.let { viewModel.setSavedList(it!!.toList()) }
         }
 
         val spinner: Spinner = binding.state
@@ -217,9 +216,13 @@ class DetailFragment : Fragment() {
         val motionLayout = binding.representativeFragment
         val motionLayoutState = motionLayout.currentState
         outState.putInt("motion_layout_state", motionLayoutState)
-        
-        val recyclerView = binding.representativesRecyclerView
-        outState.putParcelable("recycler_state", recyclerView.layoutManager?.onSaveInstanceState())
-    }
 
+        // Save representatives list data
+        viewModel.representatives.value.let { representatives ->
+            outState.putParcelableArrayList(
+                "list_data",
+                ArrayList(representatives!!.toMutableList())
+            )
+        }
+    }
 }

@@ -30,6 +30,10 @@ class RepresentativeViewModel : ViewModel() {
         _address.postValue(ad)
     }
 
+    fun setSavedList(representatives: List<Representative>) {
+        _representatives.value = representatives
+    }
+
     fun setApplicationContext(context: Context) {
         appContext = context.applicationContext
     }
@@ -48,6 +52,7 @@ class RepresentativeViewModel : ViewModel() {
                         listR.add(Representative(officials!![i], offices[i]))
                     }
                     _representatives.value = listR
+                    //_savedRepresentatives.value = listR
                 }
 
                 override fun onFailure(call: Call<RepresentativeResponse>, t: Throwable) {
